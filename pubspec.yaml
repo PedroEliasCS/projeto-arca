@@ -58,7 +58,10 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/lixeiras/
+    - assets/images/lixos/
     - assets/fonts/
+    - assets/fonts/Nunito/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -70,6 +73,9 @@ flutter:
     - family: LuckiestGuy
       fonts:
         - asset: assets/fonts/LuckiestGuy-Regular.ttf
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito/Nunito-VariableFont_wght.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
