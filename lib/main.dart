@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 
 enum TiposDeLixo { plastico, papel, metal, vidro, radioativo, naoReciclavel }
 
+// Inicia o "Do Lixo Ao Luxo"
 void main() {
   runApp(const DoLixoAoLuxo());
 }
 
+// Define o MaterialApp e escolhe o "TelaInicial" para ser a primeira tela
 class DoLixoAoLuxo extends StatelessWidget {
   const DoLixoAoLuxo({super.key});
 
@@ -23,6 +25,7 @@ class DoLixoAoLuxo extends StatelessWidget {
   }
 }
 
+// Esta é a tela inicial do game, que mostra o título e o botão para iniciar
 class TelaInicial extends StatelessWidget {
   const TelaInicial({super.key});
 
@@ -64,7 +67,7 @@ class TelaInicial extends StatelessWidget {
                     fontFamily: 'LuckiestGuy',
                   ),
                 ),
-                const Spacer(flex: 3), // Espaçador entre o texto e o botão
+                const Spacer(flex: 3),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF006400),
@@ -94,7 +97,7 @@ class TelaInicial extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Spacer(flex: 1), // Espaçador na parte inferior
+                const Spacer(flex: 1),
               ],
             ),
           ),
@@ -104,6 +107,7 @@ class TelaInicial extends StatelessWidget {
   }
 }
 
+// Essa é o Widget da tela do jogo em si, onde ele ocorre
 class TelaGame extends StatefulWidget {
   const TelaGame({super.key});
 
@@ -111,28 +115,26 @@ class TelaGame extends StatefulWidget {
   State<TelaGame> createState() => _TelaGameState();
 }
 
+// E essa classe é a contrução do Widget "TelaGame", ou seja, toda a tela do game está aqui
 class _TelaGameState extends State<TelaGame> {
   int _pontos = 0;
   int _vidas = 5;
   int _nivel = 1;
   bool _mostrarTextoNivel = true;
   late PageController _lixeirasPageController;
-  int _currentBinIndex = 0; // currently selected bin index
-  // removed parent-side bin tracking; bin index computed in ChuvaDeLixos
+  int _currentBinIndex = 0;
   final List<String> _lixeiraImagePaths = [
-    'assets/images/lixeiras/vermelho.png', // plastico
-    'assets/images/lixeiras/azul.png', // papel
-    'assets/images/lixeiras/amarelo.png', // metal
-    'assets/images/lixeiras/verde.png', // vidro
+    'assets/images/lixeiras/vermelho.png',
+    'assets/images/lixeiras/azul.png',
+    'assets/images/lixeiras/amarelo.png',
+    'assets/images/lixeiras/verde.png',
   ];
-  // Keep matching types for bins in same order as image paths
   late List<TiposDeLixo> _lixeiraTipos;
   late int _lixeiraInicialPage;
 
   @override
   void initState() {
     super.initState();
-    // initialize bin types
     _lixeiraTipos = [
       TiposDeLixo.plastico,
       TiposDeLixo.papel,
@@ -153,18 +155,18 @@ class _TelaGameState extends State<TelaGame> {
     Future.delayed(Duration(seconds: 2), () {
       if (mounted) setState(() => _mostrarTextoNivel = false);
     });
-    // recalcula página inicial e cria controller considerando bins adicionais
+    // recalcula página inicial e cria controller considerando lixeiras adicionais pra sobrarem mesmo
     _lixeiraInicialPage = _lixeiraImagePaths.length * 50;
     _lixeirasPageController = PageController(
       viewportFraction: 1 / _lixeiraImagePaths.length,
       initialPage: _lixeiraInicialPage,
     );
-    // inicializa o bin selecionado corretamente antes de qualquer swipe
-    // _currentBinIndex = _lixeiraInicialPage % _lixeiraImagePaths.length;
-    // set initial bin index
+    // inicializa a lixeira selecionado corretamente antes de qualquer swipe
     _currentBinIndex = _lixeiraInicialPage % _lixeiraImagePaths.length;
   }
 
+  // Executado quando o usuário acerta o lixo: soma pontos, sobe de nível e libera novas lixeiras
+  // Bascimente, aqui fica toda a lógica de progressão do game
   void _aumentarPontuacao(TiposDeLixo type) {
     setState(() {
       _pontos++;
@@ -173,26 +175,20 @@ class _TelaGameState extends State<TelaGame> {
         if (_nivel == 11) {
           _lixeiraImagePaths.add('assets/images/lixeiras/roxo.png');
           _lixeiraTipos.add(TiposDeLixo.radioativo);
-          // recreate controller for new bin count
           _lixeirasPageController.dispose();
           _lixeirasPageController = PageController(
             viewportFraction: 1 / _lixeiraImagePaths.length,
             initialPage: _lixeiraImagePaths.length * 50,
           );
-          // reset currentBinIndex to match new controller
-          // _currentBinIndex = _lixeirasPageController.initialPage % _lixeiraImagePaths.length;
         }
         if (_nivel == 21) {
           _lixeiraImagePaths.add('assets/images/lixeiras/cinza.png');
           _lixeiraTipos.add(TiposDeLixo.naoReciclavel);
-          // recreate controller for new bin count
           _lixeirasPageController.dispose();
           _lixeirasPageController = PageController(
             viewportFraction: 1 / _lixeiraImagePaths.length,
             initialPage: _lixeiraImagePaths.length * 50,
           );
-          // reset currentBinIndex to match new controller
-          // _currentBinIndex = _lixeirasPageController.initialPage % _lixeiraImagePaths.length;
         }
         if (_nivel == 26) {
           Navigator.push(
@@ -210,6 +206,7 @@ class _TelaGameState extends State<TelaGame> {
     });
   }
 
+  // Executa quando o usuário erra: perde vida. Inclusive, se zerar, vai para a tela de Game Over
   void _perderVida(TiposDeLixo type) {
     setState(() {
       _vidas--;
@@ -230,6 +227,9 @@ class _TelaGameState extends State<TelaGame> {
 
   @override
   Widget build(BuildContext context) {
+    // Monta na tela: fundo, pontuação, nível, chuva de lixos e controles de lixeira
+    // Ou seja, é a tela que vemos quando damos o "play" e os lixos começam a cair
+    // A tela do jogo em si 🤓
     return Scaffold(
       body: Stack(
         children: [
@@ -376,6 +376,7 @@ class _TelaGameState extends State<TelaGame> {
   }
 }
 
+// Aqui temos a tela de game over, que é exibida quando o player perde
 class TelaGameOver extends StatefulWidget {
   const TelaGameOver({super.key});
 
@@ -383,6 +384,7 @@ class TelaGameOver extends StatefulWidget {
   State<TelaGameOver> createState() => _TelaGameOverState();
 }
 
+// E aqui está a construção dessa tela de game over em si
 class _TelaGameOverState extends State<TelaGameOver> {
   @override
   Widget build(BuildContext context) {
@@ -452,7 +454,7 @@ class _TelaGameOverState extends State<TelaGameOver> {
                     ),
                   ),
                 ),
-                const Spacer(flex: 1), // Espaçador na parte inferior
+                const Spacer(flex: 1),
               ],
             ),
           ),
@@ -462,6 +464,7 @@ class _TelaGameOverState extends State<TelaGameOver> {
   }
 }
 
+// Já essa é a tela de vitória, que é exibida quando o jogador chega no nível 26 (Fim do jogo)
 class TelaVitoria extends StatefulWidget {
   const TelaVitoria({super.key});
 
@@ -469,6 +472,8 @@ class TelaVitoria extends StatefulWidget {
   State<TelaVitoria> createState() => _TelaVitoriaState();
 }
 
+// E assim como as demais telas, aqui está a construção da tela de vitória em si
+// separada de sua estanciação
 class _TelaVitoriaState extends State<TelaVitoria> {
   @override
   Widget build(BuildContext context) {
@@ -548,6 +553,7 @@ class _TelaVitoriaState extends State<TelaVitoria> {
   }
 }
 
+// Esse é o Widget que gera a chuva de lixos
 class ChuvaDeLixos extends StatefulWidget {
   final PageController lixeirasController;
   final int qtdLixeiras;
@@ -573,10 +579,9 @@ class ChuvaDeLixos extends StatefulWidget {
 
 class _ChuvaDeLixosState extends State<ChuvaDeLixos>
     with TickerProviderStateMixin {
-  // dynamic list of available trash items based on unlocked bins
+  // Lista de lixos disponíveis (vai crescendo conforme níveis são atingidos)
   late List<Map<String, Object>> _lixosDisponiveis;
 
-  // radioactive trash items added at level 11
   static const List<Map<String, Object>> _lixosRadioativos = [
     {
       'caminho': 'assets/images/lixos/barril.png',
@@ -588,7 +593,6 @@ class _ChuvaDeLixosState extends State<ChuvaDeLixos>
     },
   ];
 
-  // non-recyclable trash items added at level 21
   static const List<Map<String, Object>> _lixosNaoReciclaveis = [
     {
       'caminho': 'assets/images/lixos/fralda.png',
@@ -612,13 +616,12 @@ class _ChuvaDeLixosState extends State<ChuvaDeLixos>
   final List<_Lixo> _lixos = [];
   Timer? _timer;
   final _rnd = Random();
-  // no longer using listener, compute binIndex dynamically
 
   @override
   void initState() {
     super.initState();
-    // compute bin index dynamically when needed
-
+    // Prepara os tipos de lixo iniciais e adiciona extras se já
+    // estiver em nível mais alto (No caso de testes)
     // inicia apenas com lixos recicláveis básicos (sem itens que serão desbloqueados depois)
     _lixosDisponiveis = [
       // Plástico
@@ -669,6 +672,7 @@ class _ChuvaDeLixosState extends State<ChuvaDeLixos>
     );
   }
 
+  // Cria um objeto de lixo no centro e inicia animação de queda
   void _spawnLixo() {
     final lixos = _lixosDisponiveis;
     final selection = lixos[_rnd.nextInt(lixos.length)];
@@ -697,6 +701,7 @@ class _ChuvaDeLixosState extends State<ChuvaDeLixos>
   @override
   void didUpdateWidget(covariant ChuvaDeLixos oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // Atualiza a frequência de queda e liberação de novos tipos de lixo conforme o nível
     if (widget.nivel >= 6 && oldWidget.nivel < 6) {
       _timer?.cancel();
       _tempoParaSurgirLixos = 3;
@@ -713,17 +718,18 @@ class _ChuvaDeLixosState extends State<ChuvaDeLixos>
         (_) => _spawnLixo(),
       );
     }
-    // Ao atingir nível 21, reduz duração de queda (animação) para 4s
+    // Ao atingir nível 21, reduz duração de queda (animação) para 2 segundos
+    // (Pode parecer 4 por conta do valor, mas esse "4" resulta em 2 segundos no game)
     if (widget.nivel >= 21 && oldWidget.nivel < 21) {
       _velocidadeDoLixo = 4;
     }
-    // Ao desbloquear bin roxo (niv 11), adiciona lixos radioativos
+    // Ao desbloquear a lixeira roxa (niv 11), adiciona lixos radioativos
     if (widget.nivel >= 11 && oldWidget.nivel < 11) {
       setState(() {
         _lixosDisponiveis.addAll(_lixosRadioativos);
       });
     }
-    // Ao desbloquear bin cinza (niv 21), adiciona lixos não recicláveis
+    // Ao desbloquear a lixeira cinza (niv 21), adiciona lixos não recicláveis
     if (widget.nivel >= 21 && oldWidget.nivel < 21) {
       setState(() {
         _lixosDisponiveis.addAll(_lixosNaoReciclaveis);
@@ -740,6 +746,7 @@ class _ChuvaDeLixosState extends State<ChuvaDeLixos>
 
   @override
   Widget build(BuildContext context) {
+    // Desenha cada objeto de lixo em queda e verifica se acertou a lixeira certa
     final size = MediaQuery.of(context).size;
     final topoDaLixeiraY = size.height - 100;
 
@@ -750,8 +757,11 @@ class _ChuvaDeLixosState extends State<ChuvaDeLixos>
               animation: lixo.animacao,
               builder: (_, __) {
                 final y = lixo.animacao.value * (size.height + 100) - 100;
+                // Se o lixo chegou na altura das lixeiras:
                 if (y >= topoDaLixeiraY && !lixo.jaPontuado) {
+                  // Marca pontuação como computada para evitar duplicação
                   lixo.jaPontuado = true;
+                  // Verifica se a lixeira central combina com o tipo do lixo
                   // calcula índice da lixeira centrada dinamicamente
                   final double pagePos =
                       widget.lixeirasController.page ??
@@ -771,7 +781,7 @@ class _ChuvaDeLixosState extends State<ChuvaDeLixos>
                   });
                 }
                 return Positioned(
-                  left: (size.width - 40) / 2, // center drop position
+                  left: (size.width - 40) / 2,
                   top: y,
                   child: Image.asset(lixo.caminho, width: 40, height: 40),
                 );
@@ -782,6 +792,7 @@ class _ChuvaDeLixosState extends State<ChuvaDeLixos>
   }
 }
 
+// E por fim, essa é a classe onde criamos o objeto "Lixo"
 class _Lixo {
   final String caminho;
   final double comecoX;
