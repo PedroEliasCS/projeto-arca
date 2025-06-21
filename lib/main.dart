@@ -197,7 +197,7 @@ class _TelaGameState extends State<TelaGame> {
         if (_nivel == 26) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const TelaGameOver()),
+            MaterialPageRoute(builder: (_) => const TelaVitoria()),
           );
         } else {
           _vidas = 5;
@@ -443,6 +443,92 @@ class _TelaGameOverState extends State<TelaGameOver> {
                   },
                   child: const Text(
                     'Reiniciar',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      letterSpacing: 1,
+                      color: Colors.white,
+                      fontFamily: 'LuckiestGuy',
+                    ),
+                  ),
+                ),
+                const Spacer(flex: 1), // Espaçador na parte inferior
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class TelaVitoria extends StatefulWidget {
+  const TelaVitoria({super.key});
+
+  @override
+  State<TelaVitoria> createState() => _TelaVitoriaState();
+}
+
+class _TelaVitoriaState extends State<TelaVitoria> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: <Widget>[
+          Container(
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(255, 87, 165, 255),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Image.asset('assets/images/montanhas.png', fit: BoxFit.fill),
+          ),
+          Positioned(
+            bottom: 575,
+            left: 0,
+            right: 0,
+            child: Image.asset('assets/images/nuvens.png'),
+          ),
+          Container(decoration: const BoxDecoration(color: Color(0x80FFFFFF))),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Spacer(flex: 2),
+                const Text(
+                  'Você\nGanhou!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 56,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFFFC400),
+                    fontFamily: 'LuckiestGuy',
+                  ),
+                ),
+                const Spacer(flex: 3), // Espaçador entre o texto e o botão
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFC400),
+                    padding: const EdgeInsets.fromLTRB(50, 15, 50, 10),
+                    textStyle: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const TelaGame()),
+                    );
+                  },
+                  child: const Text(
+                    'Jogar Novamente',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
